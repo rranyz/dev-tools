@@ -1,0 +1,10 @@
+# ShellCheck settings for wsl-devtools (run from this directory, see docs/testing.md §1).
+
+# Resolve "# shellcheck source=../lib/x.sh" relative to each script, and follow those files.
+source-path=SCRIPTDIR
+external-sources=true
+
+# SC2119: several detection helpers (read_os_release, detect_wsl_version, is_systemd_pid1,
+# db_datadir_state, nvm/bashrc helpers) take an optional file path so tests can pass fixtures.
+# Normal callers deliberately pass no argument.
+disable=SC2119

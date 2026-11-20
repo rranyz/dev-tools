@@ -18,7 +18,7 @@ WSL_DEVTOOLS_COMMON_LOADED=1
 # ---------------------------------------------------------------------------
 
 WSL_DEVTOOLS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CONFIG_DIR="${WSL_DEVTOOLS_ROOT}/config"
+CONFIG_DIR="${WSL_DEVTOOLS_CONFIG_DIR:-${WSL_DEVTOOLS_ROOT}/config}"   # override for tests
 LOG_DIR="${LOG_DIR:-${WSL_DEVTOOLS_ROOT}/logs}"
 LOG_FILE="${LOG_FILE:-}"   # empty: messages go to the terminal only
 DRY_RUN="${DRY_RUN:-0}"    # 1: run() prints commands instead of executing them
@@ -141,6 +141,44 @@ run() {
     "$@"
 }
 
+# Describe a module exit code (see docs/architecture.md, module contract).
+exit_code_meaning() {
+    case "${1:-}" in
+        0) echo "done" ;;
+        2) echo "nothing to do" ;;
+        3) echo "not possible: a requirement is not met" ;;
+        4) echo "cancelled" ;;
+        *) echo "failed (exit ${1:-?})" ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+# Downloads
+# ---------------------------------------------------------------------------
+
+# Print a file's SHA-256 (hex).
+sha256_of() {
+    local sum
+    sum="$(sha256sum "$1")" || return 1
+    echo "${sum%% *}"
+}
+
+# Download a URL to a file and check its SHA-256 before anyone uses it.
+# Returns 1 (with a message) when the download fails or the checksum differs.
+# Usage: download_checked <url> <destination> <expected-sha256>
+download_checked() {
+    local url="$1" destination="$2" expected="$3" actual
+    if ! curl -fsSL --max-time 300 -o "$destination" "$url"; then
+        log_error "Downloading ${url} failed."
+        return 1
+    fi
+    actual="$(sha256_of "$destination")" || return 1
+    if [[ "$actual" != "$expected" ]]; then
+        log_error "Checksum mismatch for ${url}: expected ${expected}, got ${actual}. The file is not used."
+        return 1
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Command and dependency checks
 # ---------------------------------------------------------------------------
@@ -223,6 +261,13 @@ is_valid_domain() {
     (( ${#domain} <= 253 )) && [[ "$domain" =~ $pattern ]]
 }
 
+# Absolute path made only of letters, digits and . _ / -, with no ".." part.
+# Used for paths written into config files, e.g. an Nginx document root.
+is_safe_path() {
+    local path="${1:-}"
+    [[ "$path" =~ ^/[A-Za-z0-9._/-]+$ && "/${path}/" != *"/../"* ]]
+}
+
 # True if the first argument equals one of the others.
 # Usage: is_one_of "$choice" install status verify
 is_one_of() {
@@ -284,4 +329,20 @@ load_config() {
 
     # shellcheck source=/dev/null
     source "$file"
+}
+
+# True when DRY_RUN is unset, 0 or 1. Only "1" means a dry run, so a value like "yes" or
+# "true" would silently mean a real run; every entry script refuses it instead.
+is_valid_dry_run() {
+    is_one_of "${DRY_RUN:-}" "" 0 1
+}
+
+# Load the project's standard config files from CONFIG_DIR. Every module and script calls
+# this first, so it also refuses an invalid DRY_RUN before anything can run.
+load_project_config() {
+    if ! is_valid_dry_run; then
+        log_error "DRY_RUN='${DRY_RUN}' is not valid. Use DRY_RUN=1 for a dry run, or leave it unset."
+        return 3
+    fi
+    load_config "${CONFIG_DIR}/versions.conf" && load_config "${CONFIG_DIR}/packages.conf"
 }

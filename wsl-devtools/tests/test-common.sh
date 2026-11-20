@@ -10,31 +10,11 @@ set -uo pipefail
 
 TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${TESTS_DIR}/.." && pwd)"
-TMP_DIR="$(mktemp -d)"
-trap 'rm -rf "${TMP_DIR}"' EXIT
 
+# shellcheck source=helpers.sh
+source "${TESTS_DIR}/helpers.sh"
 # shellcheck source=../lib/common.sh
 source "${PROJECT_ROOT}/lib/common.sh"
-
-PASSED=0
-FAILED=0
-
-pass() { PASSED=$((PASSED + 1)); printf '  ok    %s\n' "$1"; }
-fail() { FAILED=$((FAILED + 1)); printf '  FAIL  %s\n' "$1"; }
-
-# assert_ok "description" command args...   -> command must succeed
-assert_ok() {
-    local description="$1"
-    shift
-    if "$@" >/dev/null 2>&1; then pass "$description"; else fail "$description"; fi
-}
-
-# assert_fail "description" command args... -> command must fail
-assert_fail() {
-    local description="$1"
-    shift
-    if "$@" >/dev/null 2>&1; then fail "$description"; else pass "$description"; fi
-}
 
 # Write a temporary config file with the given lines.
 make_config() {
@@ -122,16 +102,16 @@ echo "Confirmation"
 assert_fail "confirm without a terminal answers no" confirm "Proceed?" </dev/null
 
 echo "Logging"
-(
+if (
     LOG_DIR="${TMP_DIR}/logs"
     log_init test-run >/dev/null
     log_warn "written to the log" 2>/dev/null
     grep -q "\[WARN\] written to the log" "${LOG_FILE}"
-)
-if (( $? == 0 )); then pass "log_init writes messages to a log file"; else fail "log_init writes messages to a log file"; fi
+); then pass "log_init writes messages to a log file"; else fail "log_init writes messages to a log file"; fi
 assert_fail "log_init refuses an unsafe name"  log_init "../escape"
 
 echo "Error handling"
+# shellcheck disable=SC2016 # $1 expands in the child bash, not here
 strict_output="$(bash -c 'source "$1"; enable_strict_mode; false; echo reached' _ "${PROJECT_ROOT}/lib/common.sh" 2>&1)"
 strict_status=$?
 assert_ok   "strict mode stops on failure"     test "$strict_status" -ne 0
@@ -141,6 +121,15 @@ assert_ok   "ERR trap reports the failed command" grep -q "Command failed (exit 
 die_status=$?
 assert_ok   "die exits with the given code"    test "$die_status" -eq 3
 
-echo
-echo "Passed: ${PASSED}  Failed: ${FAILED}"
-(( FAILED == 0 ))
+echo "DRY_RUN values"
+# Check a DRY_RUN value without changing the test's own setting.
+dry_run_is_valid() { local DRY_RUN="$1"; is_valid_dry_run; }
+config_status_with_dry_run() { local DRY_RUN="$1" rc=0; load_project_config 2>/dev/null || rc=$?; echo "$rc"; }
+assert_ok   "DRY_RUN unset is valid"              dry_run_is_valid ""
+assert_ok   "DRY_RUN=0 is valid"                  dry_run_is_valid 0
+assert_ok   "DRY_RUN=1 is valid"                  dry_run_is_valid 1
+assert_fail "DRY_RUN=yes is not valid"            dry_run_is_valid yes
+assert_fail "DRY_RUN=true is not valid"           dry_run_is_valid true
+assert_equals "load_project_config refuses DRY_RUN=yes with 3" "3" "$(config_status_with_dry_run yes)"
+
+finish

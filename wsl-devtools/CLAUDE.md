@@ -64,7 +64,6 @@ Keep installation logic inside independent modules. Main scripts should primaril
 ### Optional tools
 
 - Redis
-- phpMyAdmin
 - Docker
 - Mailpit
 - PostgreSQL
@@ -270,4 +269,8 @@ Always prioritize correctness, safety, readability, and maintainability over unn
 ## 16. Repository Notes
 
 - The git repository root is the parent directory `dev-tools/`, not `wsl-devtools/`; git commands act on the parent.
-- No phase has been implemented yet, so there are no build, lint, or test commands. Add them here as they are introduced (e.g. `bash -n` and `shellcheck` checks once scripts exist).
+- Checks, run from `wsl-devtools/` (none of them change the system):
+  - syntax: `for f in lib/*.sh modules/*.sh scripts/*.sh tests/*.sh config/*.conf; do bash -n "$f"; done`
+  - lint: `shellcheck -x lib/*.sh modules/*.sh scripts/*.sh tests/*.sh` and `shellcheck config/*.conf` (development-only dependency; `.shellcheckrc` sets the source path and the SC2119 exception)
+  - tests: `for t in tests/test-*.sh; do bash "$t" || break; done`, or one suite, e.g. `bash tests/test-node.sh`
+- Real installs are tested by the user in a disposable Ubuntu 24.04 WSL distro; on the development machine only `status`, `verify` and `DRY_RUN=1` runs are used (see `docs/testing.md`).
