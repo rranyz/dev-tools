@@ -174,7 +174,7 @@ Phase 7 brief asked.
     `lib/packages.sh` (a message when `apt-get install` fails).
 - **Tests:** all suites; ShellCheck; the distro checklist in testing.md §10, run by the user.
 
-### Phase 9: Final documentation and project review (completed, awaiting review)
+### Phase 9: Final documentation and project review (completed, approved)
 Defined by the user's Phase 9 brief, which replaces the earlier provisional definition.
 - **Goal:**
   - a finished `README.md` covering: requirements, prerequisites, `install-all.sh`,

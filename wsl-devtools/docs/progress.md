@@ -13,7 +13,7 @@
 | 6 | Optional tools: Redis, PostgreSQL, Mailpit, Docker Engine | Completed, approved |
 | 7 | Installation orchestration: `install-all.sh` and `install-menu.sh` (reviewed) | Completed, approved |
 | 8 | Testing and quality assurance | Completed, approved |
-| 9 | Final documentation and project review | **Completed, awaiting review** (real-install acceptance run pending) |
+| 9 | Final documentation and project review | Completed, approved (real-install acceptance run pending) |
 
 Phase 3 merged the earlier plan's Phases 3–6, so the later phases were renumbered. Phase 7 merged
 the provisional `install-all.sh` and `install-menu.sh` phases.
@@ -1185,8 +1185,8 @@ Checked against the code (read-only):
   - Xdebug `start_with_request=yes` in `99-xdebug-debug.ini`.
 
 ### Future improvements (recommendations, none started)
-1. **Commit** Phases 1–9 (only the initial commit exists), ideally before the acceptance run, so
-   that fixes show up as small diffs.
+1. ~~**Commit** Phases 1–9 (only the initial commit exists), ideally before the acceptance run, so
+   that fixes show up as small diffs.~~ Done in `74c93f3`.
 2. **Acceptance run** (testing.md §12), and record the results here.
 3. **R1:** simulate `apt-get -s install` before `apt-get update`, so a refused install leaves the
    package lists untouched.
@@ -1204,7 +1204,7 @@ Checked against the code (read-only):
     `test-optional.sh` already check them online.
 
 ### Next step
-**Waiting for your review and approval of Phase 9.** No further changes until then.
+Approved on 2026-11-23. See the [project close-out](#project-close-out-2026-11-23).
 
 ---
 
@@ -1214,8 +1214,7 @@ The details are in the [Phase 9 section](#phase-9-final-documentation-and-projec
 This summary records what happened in the session.
 
 ### Current phase
-- **Phase 9: Final documentation and project review.** Completed and **waiting for your review
-  and approval.**
+- **Phase 9: Final documentation and project review.** Completed, and approved on 2026-11-23.
 - Phase 8 was approved during this session.
 - No later phase has been started.
 
@@ -1281,7 +1280,8 @@ This summary records what happened in the session.
 ### Outstanding issues
 1. **Acceptance run (testing.md §12) not done.** The real installs are unverified.
 2. **R1** (deferred): a refused install has already refreshed the package lists.
-3. **Git:** all of Phases 1–9 is uncommitted; only `868738f chore: initial commit` exists.
+3. ~~**Git:** all of Phases 1–9 is uncommitted; only `868738f chore: initial commit` exists.~~
+   Committed in `74c93f3`.
 4. **Development machine** (unchanged, your decision):
    - PHP 8.4 lacks `bcmath`, and PHP 7.4 lacks several extensions;
    - NVM 0.39.1 (the pin is v0.41.0);
@@ -1292,9 +1292,41 @@ This summary records what happened in the session.
    split if they need changes.
 
 ### Next recommended task
-1. Your review and approval of Phase 9.
-2. Commit Phases 1–9 to git (only when you ask).
+1. ~~Your review and approval of Phase 9.~~ Approved on 2026-11-23.
+2. ~~Commit Phases 1–9 to git (only when you ask).~~ Committed in `74c93f3`.
 3. Run the testing.md §12 acceptance run in a disposable Ubuntu 24.04 distro, and share the
    results table, the logs and any failure output.
 
 **No next phase has been started.**
+
+---
+
+## Project close-out (2026-11-23)
+
+### Status
+- **Phases 0–9 are completed and approved.** The documentation is finished.
+- **The real installs are still unverified.** The [acceptance run](testing.md#12-final-acceptance-run-phase-9)
+  has not been done.
+
+### Changed in this close-out
+Documentation only:
+
+| File | Change |
+|---|---|
+| `README.md` | Status note; a Troubleshooting row and a Known limitations item for the clone permissions |
+| `docs/testing.md` | §12 step 1: the `chmod` command after a clone |
+| `docs/implementation-plan.md` | Phase 9 marked approved |
+| `docs/progress.md` | Phase 9 status, the outdated git items, this section |
+
+### Tests
+No code changed, so the suites were not rerun. `bash -n` and ShellCheck passed during the
+close-out inspection. The last full suite result is 709 passed, 0 failed, 1 skipped (2026-11-20).
+
+### Remaining
+1. **File modes:** all scripts are committed as non-executable, so a fresh clone needs
+   `chmod +x modules/*.sh scripts/*.sh`. The working tree has the executable bit on 21 files as
+   an uncommitted change. Committing that change removes the extra step.
+2. **Acceptance run:** testing.md §12, in a disposable Ubuntu 24.04 distro.
+3. **R1** stays a documented limitation, as you decided.
+4. **Development machine:** the items listed under
+   [Outstanding issues](#outstanding-issues) are unchanged.

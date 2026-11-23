@@ -637,6 +637,8 @@ Rules for the whole run:
    wsl --install -d Ubuntu-24.04 --name wsl-devtools-test
    ```
    Create your user, copy or clone the project into your Linux home directory, and `cd` into it.
+   After a clone, run `chmod +x modules/*.sh scripts/*.sh`, because git stores the scripts as
+   non-executable.
 2. **System check:** `scripts/check-system.sh` → exit 0 (see [§4](#4-phase-2-checks)).
 3. **Static checks and tests in the distro:** §1, then the suites in §2. Counts may differ from
    the development machine, because tests that depend on what is installed adapt or skip; none

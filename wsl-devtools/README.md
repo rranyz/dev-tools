@@ -11,7 +11,7 @@ Two entry points do the coordinating: `scripts/install-all.sh` (guided installat
 set) and `scripts/install-menu.sh` (interactive menu). The installation logic lives in one
 module per tool under `modules/`, and each module can be run on its own.
 
-> **Status:** Phases 1–9 are implemented and documented. All automated tests pass, and the
+> **Status:** Phases 1–9 are implemented, documented and approved. All automated tests pass, and the
 > read-only checks pass on an existing setup. **The real installs in a fresh Ubuntu 24.04 distro
 > have not been confirmed yet.** That acceptance run is the last step; see
 > [docs/testing.md §12](docs/testing.md#12-final-acceptance-run-phase-9) and
@@ -355,6 +355,7 @@ Mailpit's inbox is at http://localhost:8025 in a Windows browser.
 
 | Problem | What to do |
 |---|---|
+| `Permission denied` when running a script after cloning | Git has the scripts as non-executable. From the project folder, run `chmod +x modules/*.sh scripts/*.sh` |
 | `[ERROR] systemd: …` (not PID 1, no `systemctl`, or offline) | The toolkit stops service work and shows how to enable systemd in `/etc/wsl.conf`. Make that change yourself, run `wsl.exe --shutdown` from Windows, reopen Ubuntu, then `scripts/check-system.sh` |
 | apt waits or fails on the lock | Another apt process (often unattended-upgrades) is running. The toolkit waits up to 120 s. Wait for it to finish, then run the module again |
 | "Refreshing package lists failed" | Check the network and the apt source named in the message. A broken third-party source stops the run on purpose |
@@ -378,6 +379,8 @@ Mailpit's inbox is at http://localhost:8025 in a Windows browser.
 - **Mailpit** is amd64 only. Updating Mailpit or NVM means changing the pinned version and checksum
   in `config/versions.conf`.
 - **Not verified yet:** the real installs, which are pending the acceptance run in a fresh distro.
+- **A fresh clone needs one extra step.** The scripts are stored in git without the executable
+  bit, so run `chmod +x modules/*.sh scripts/*.sh` once after cloning.
 - **The log file** does not hold apt's own output.
 - **sudo** can ask for the password again during a long run.
 - **A refused install has already refreshed the package lists.** When an install is refused
