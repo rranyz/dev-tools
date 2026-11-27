@@ -1,0 +1,49 @@
+@use '../../styles/abstracts' as *;
+
+.header {
+  border-bottom: 1px solid $color-border;
+  background-color: $color-background;
+}
+
+.inner {
+  @include flex(column, flex-start, flex-start, spacing(3));
+
+  max-width: 48rem;
+  margin-inline: auto;
+  padding: spacing(4) spacing(6);
+
+  @include breakpoint-up(sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.brand {
+  font-family: $font-mono;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.nav {
+  @include flex(row, center, flex-start, spacing(4));
+
+  font-size: $font-size-sm;
+}
+
+.link {
+  border-radius: $radius-sm;
+  color: $color-secondary;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  @include hover-capable {
+    &:hover {
+      color: $color-foreground;
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

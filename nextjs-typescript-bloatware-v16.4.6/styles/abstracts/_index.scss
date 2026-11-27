@@ -1,0 +1,5 @@
+// Design tokens, functions and mixins. Outputs no CSS.
+// Use it in any SCSS file with: @use '<relative path>/styles/abstracts' as *;
+@forward 'variables';
+@forward 'functions';
+@forward 'mixins';

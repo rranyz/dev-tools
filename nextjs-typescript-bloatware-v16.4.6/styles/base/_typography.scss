@@ -1,0 +1,16 @@
+// Tailwind Preflight already resets fonts and margins. This only adds
+// small text-wrapping improvements that no Tailwind utility on the page sets.
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}

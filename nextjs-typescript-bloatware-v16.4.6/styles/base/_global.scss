@@ -1,0 +1,25 @@
+@use '../abstracts' as *;
+
+@layer base {
+  // A clear focus outline for keyboard users. Components can override it.
+  :focus-visible {
+    @include focus-ring;
+  }
+
+  ::selection {
+    background-color: $color-primary;
+    color: $color-primary-foreground;
+  }
+
+  // Respect the "reduce motion" system setting.
+  @include reduced-motion {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

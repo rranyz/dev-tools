@@ -1,0 +1,6 @@
+// Global SCSS entry. Imported in app/layout.tsx right AFTER globals.css.
+//
+// app/globals.css stays the Tailwind entry (the Turbopack Tailwind loader only
+// handles *.css). This file adds global SCSS on top of it. All its rules live
+// in `@layer base`, below Tailwind utilities (see styles/base/_layers.scss).
+@use '../styles/base';

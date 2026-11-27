@@ -1,0 +1,4 @@
+// Same cascade layer order that Tailwind v4 declares. Repeating it is harmless
+// and keeps the order right even if this stylesheet loads before Tailwind's.
+// Must be the first CSS this folder outputs, so _index.scss @uses it first.
+@layer theme, base, components, utilities;

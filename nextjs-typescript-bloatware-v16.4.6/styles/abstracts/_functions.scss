@@ -1,0 +1,12 @@
+@use 'sass:math';
+@use 'variables' as *;
+
+/// Spacing on the same scale as Tailwind: spacing(4) = 1rem, like `p-4`.
+@function spacing($steps) {
+  @return $steps * $spacing-unit;
+}
+
+/// Converts pixels to rem (16px base): rem(24px) = 1.5rem.
+@function rem($px, $base: 16px) {
+  @return math.div($px, $base) * 1rem;
+}

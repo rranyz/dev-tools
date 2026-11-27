@@ -1,0 +1,80 @@
+@use 'sass:map';
+@use 'variables' as *;
+
+// ---------------------------------------------------------------------------
+// Responsive breakpoints (same names and values as Tailwind: sm, md, lg, xl, 2xl)
+// ---------------------------------------------------------------------------
+
+/// Styles for screens at least as wide as the breakpoint (like Tailwind `md:`).
+@mixin breakpoint-up($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error 'Unknown breakpoint `#{$name}`. Use one of: #{map.keys($breakpoints)}.';
+  }
+
+  @media (width >= #{map.get($breakpoints, $name)}) {
+    @content;
+  }
+}
+
+/// Styles for screens narrower than the breakpoint (like Tailwind `max-md:`).
+@mixin breakpoint-down($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error 'Unknown breakpoint `#{$name}`. Use one of: #{map.keys($breakpoints)}.';
+  }
+
+  @media (width < #{map.get($breakpoints, $name)}) {
+    @content;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Layout
+// ---------------------------------------------------------------------------
+
+/// Flexbox shorthand.
+@mixin flex($direction: row, $align: stretch, $justify: flex-start, $gap: null) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+  gap: $gap;
+}
+
+/// Centers the content horizontally and vertically.
+@mixin center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ---------------------------------------------------------------------------
+// Common media queries and states
+// ---------------------------------------------------------------------------
+
+/// Hover styles only on devices that can really hover (not on touch screens).
+@mixin hover-capable {
+  @media (hover: hover) {
+    @content;
+  }
+}
+
+/// Styles for users who asked the system for less motion.
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+/// Dark color scheme. Prefer the color variables (they already switch);
+/// use this only for non-color changes.
+@mixin dark {
+  @media (prefers-color-scheme: dark) {
+    @content;
+  }
+}
+
+/// Visible keyboard focus outline.
+@mixin focus-ring($color: $color-foreground, $offset: 2px) {
+  outline: 2px solid $color;
+  outline-offset: $offset;
+}

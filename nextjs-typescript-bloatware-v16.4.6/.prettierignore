@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+build/
+dist/
+coverage/
+.vercel/
+
+# Playwright output
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Static assets
+public/
+*.min.js
+*.min.css
+
+# Generated files
+next-env.d.ts
+*.tsbuildinfo
+
+# Lockfiles
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+bun.lock
+bun.lockb
+
+# Environment files
+.env*
+
+# Managed by `next dev` (it rewrites its blocks)
+AGENTS.md

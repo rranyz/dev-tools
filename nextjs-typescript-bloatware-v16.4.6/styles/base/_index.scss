@@ -1,0 +1,5 @@
+// Global base styles. Every partial wraps its rules in `@layer base`,
+// so Tailwind utilities (in `@layer utilities`) always win over them.
+@use 'layers';
+@use 'typography';
+@use 'global';
